@@ -9,7 +9,8 @@ package complexityparser;
 *    Stony Brook ID: 110261379
 **/
 public class CodeBlock {
-	private enum BLOCK_TYPES { // Types of blocks to parse
+	@SuppressWarnings("unused")
+	private static enum BLOCK_TYPES { // Types of blocks to parse
 		DEF,
 		FOR,
 		WHILE,
