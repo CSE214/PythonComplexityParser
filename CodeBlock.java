@@ -22,6 +22,7 @@ public class CodeBlock {
 	private Complexity highestSubComplexity; // Highest order of CodeBlock nested in this instance
 	private String name; // Used to organize block structure of the code
 	private String loopVariable; // Used to keep track of loop variable in WHILE block
+	private int subBlockCount;
 	/**
 	 * @return 
 	 *	The blockComplexity of this instance
@@ -79,17 +80,46 @@ public class CodeBlock {
 		this.loopVariable = loopVariable;
 	}
 	/**
-	 * Returns an instance of CodeBlock
-	 * 
-	 * @param name
-	 * 	The name of the CodeBlock
+	 * @return 
+	 *	The subBlockCount of this instance
 	 */
-	public CodeBlock(String name) {
-		super();
+	public int getSubBlockCount() {
+		return subBlockCount;
+	}
+	/**
+	 * Increment the subBlockCount by 1.
+	 */
+	public void incrementSubBlockCount() {
+		this.subBlockCount++;
+	}
+	/**
+	 * Used to initialize the global codeBlock. 
+	 */
+	public CodeBlock() {
 		this.blockComplexity = new Complexity();
 		this.highestSubComplexity = new Complexity();
-		this.name = name;
+		this.name = "";
 		this.loopVariable = null;
+		this.subBlockCount = 0;
+	}
+	
+	/**
+	 * Creates a new CodeBlock nested inside of topCodeBlock.
+	 */
+	public CodeBlock(CodeBlock topCodeBlock) {
+		this.blockComplexity = new Complexity();
+		this.highestSubComplexity = new Complexity();
+		this.loopVariable = null;
+		this.subBlockCount = 0;
+		
+		topCodeBlock.incrementSubBlockCount();
+		if (topCodeBlock.getName().equals("")) {
+			this.name = Integer.toString(topCodeBlock.getSubBlockCount());
+		}
+		else {
+			this.name = topCodeBlock.getName() + "." + 
+					    Integer.toString(topCodeBlock.getSubBlockCount());
+		}
 	}
 	
 }

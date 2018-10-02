@@ -133,4 +133,23 @@ public class Line {
 	public static String getWhileLoopVariable(String line) {
 		return line.trim().split(" ")[1];
 	}
+	
+	/**
+	 * Checks if while loop variable is being updated.
+	 * 
+	 * <dl>
+	 * <dt>Preconditions:</dt>
+	 * <dd><code></code> returns <code>"while"</code>.
+	 * </dl>
+	 * 
+	 * @param line
+	 * 	The line to retrieve the loop variable from
+	 * 
+	 * @return
+	 * 	True if the loopVariable is updated, false otherwise
+	 */
+	public static boolean updatesLoopVariable(String line, String loopVariable) {
+		return line.trim().equals(loopVariable + " -= 1") ||
+			   line.trim().equals(loopVariable + " /= 2");
+	}
 }

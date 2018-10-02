@@ -2,7 +2,6 @@ package complexityparser;
 
 import java.io.File;
 import java.util.Scanner;
-import java.util.Stack;
 
 /**
 * The <code>PythonTracer</code> allows the user to give a Python file as input, and computes its Big-Oh complexity.
@@ -30,6 +29,10 @@ public class PythonTracer {
 		}
 	}
 	
+	public static void handleKeyword(String line) {
+		
+	}
+	
 	/**
 	 * Opens the indicated file and traces through the code of the Python function contained within the file, returning the 
 	 * Big-Oh order of complexity of the function. During operation, the stack trace should be printed to the console as code 
@@ -55,7 +58,7 @@ public class PythonTracer {
 	 * determines its order of complexity, and prints the result to the console.
 	 */
 	public static void main (String[] args) {
-		String string = "for i in N:";
-		System.out.println(Line.getForLoopCount(string));
+		
+		
 	}
 }
