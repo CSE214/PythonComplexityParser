@@ -126,4 +126,34 @@ public class Complexity {
 		}
 		
 	}
+	
+	/**
+	 * Returns the sum of two complexities.
+	 * 
+	 * @param a
+	 * 	The first complexity to add
+	 * @param b
+	 * 	The second complexity to add
+	 * 
+	 * @return
+	 * 	The sum of Complexities <code>a</code> and <code>b</code>
+	 */
+	public static Complexity addComplexities(Complexity a, Complexity b) {
+		return a.isLessThan(b) ? b : a;
+	}
+	
+	/**
+	 * Returns the product of two complexities.
+	 * 
+	 * @param a
+	 * 	The first complexity to multiply
+	 * @param b
+	 * 	The second complexity to multiply
+	 * 
+	 * @return
+	 * 	The product of Complexities <code>a</code> and <code>b</code>
+	 */
+	public static Complexity multiplyComplexities(Complexity a, Complexity b) {
+		return new Complexity(a.getNPower() + b.getNPower(), a.getLogPower() + b.getLogPower());
+	}
 }

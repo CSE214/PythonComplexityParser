@@ -53,6 +53,13 @@ public class CodeBlock {
 	}
 	/**
 	 * @return 
+	 *	The total complexity of this instance
+	 */
+	public Complexity getTotalComplexity() {
+		return Complexity.multiplyComplexities(blockComplexity, highestSubComplexity);
+	}
+	/**
+	 * @return 
 	 *	The name of this instance
 	 */
 	public String getName() {

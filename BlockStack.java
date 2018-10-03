@@ -31,13 +31,28 @@ public class BlockStack {
 	}
 	
 	/**
-	 * Identical functionality to Stack.pop()
+	 * Pops the topmost code block off the stack, and updates the highest sub-complexity
+	 * of the new topmost block if it exists.
+	 * 
+	 * <dl>
+	 * <dt>Postconditions:</dt>
+	 * <dd>The topmost block has been popped, and, if it exists, the new topmost block has its highest 
+	 * sub-complexity updated.</dd>
+	 * </dl>
 	 * 
 	 * @return	
 	 * 	The popped <code>CodeBlock</code>
 	 */
 	public CodeBlock pop() {
 		size--;
+		CodeBlock oldTop = stack.pop();
+		Complexity oldTopComplexity = oldTop.getTotalComplexity(); 
+		
+		if (size > -1) {
+			if (peek().getHighestSubComplexity().isLessThan(oldTopComplexity)) {
+				peek().setHighestSubComplexity(oldTopComplexity);
+			}
+		}
 		return stack.pop();
 	}
 	
