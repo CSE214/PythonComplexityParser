@@ -15,9 +15,18 @@ public class BlockStack {
 	private int size = -1; // Set to -1 so globalBlock isn't counted in size
 	
 	/**
+	 * @return
+	 * 	The size of the stack
+	 */
+	public int getSize() {
+		return size;
+	}
+	
+	/**
 	 * Identical functionality to Stack.push()
 	 */
 	public void push(CodeBlock codeBlock) {
+		size++;
 		stack.push(codeBlock);
 	}
 	
@@ -28,6 +37,7 @@ public class BlockStack {
 	 * 	The popped <code>CodeBlock</code>
 	 */
 	public CodeBlock pop() {
+		size--;
 		return stack.pop();
 	}
 	

@@ -17,14 +17,14 @@ public class Complexity {
 	 * @return 
 	 *	The nPower of this instance
 	 */
-	public int getnPower() {
+	public int getNPower() {
 		return nPower;
 	}
 	/**
 	 * @param nPower 
 	 * 	The new nPower to set
 	 */
-	public void setnPower(int nPower) {
+	public void setNPower(int nPower) {
 		this.nPower = nPower;
 	}
 	/**
@@ -62,16 +62,68 @@ public class Complexity {
 		this.logPower = logPower;
 	}
 	
+	/**
+	 * Returns a string representing the nPower component of the complexity.
+	 * 
+	 * @return
+	 * 	a string representing the nPower component of the complexity.
+	 */
+	private String getNPowerString() {
+		if (nPower == 0) {
+			return "";
+		} else if (nPower == 1) {
+			return "n";
+		} else {
+			return "n^" + nPower;
+		}
+	}
+	
+	/**
+	 * Returns a string representing the logPower component of the complexity.
+	 * 
+	 * @return
+	 * 	a string representing the logPower component of the complexity.
+	 */
+	private String getLogPowerString() {
+		if (logPower == 0) {
+			return "";
+		} else if (logPower == 1) {
+			return "log(n)";
+		} else {
+			return "log(n)^" + logPower;
+		}
+	}
 	@Override
 	public String toString() {
-		if ( nPower == 0 && logPower == 0 ) {
+		String nPowerString = getNPowerString();
+		String logPowerString = getLogPowerString();
+		
+		if (nPowerString.equals("") && logPowerString.equals("")) {
 			return "O(1)";
-		} else if ( logPower == 0) {
-			return "O(n^" + nPower + ")";
-		} else if ( nPower == 0) {
-			return "O(log(n)^" + logPower + ")";
+		} else if (logPowerString.equals("")) {
+			return "O(" + nPowerString + ")";
+		} else if (nPowerString.equals("")) {
+			return "O(" + logPowerString + ")";
 		} else {
-			return "O(n^" + nPower + " * log(n)^" + logPower + ")";
+			return "O(" + nPowerString + " * " + logPowerString + ")";
 		}
+	}
+	
+	/**
+	 * Checks if <code>complexity</code> is strictly bigger than this instance of <code>Complexity</code>
+	 * 
+	 * @param complexity
+	 * 	The complexity to compare with
+	 * 
+	 * @return
+	 * 	True if <code>complexity</code> is strictly greater, false otherwise. 
+	 */
+	public boolean isLessThan(Complexity complexity) {
+		if (nPower > complexity.getNPower()) {
+			return true;
+		} else {
+			return logPower > complexity.getLogPower(); 
+		}
+		
 	}
 }

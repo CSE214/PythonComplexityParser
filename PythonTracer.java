@@ -58,7 +58,11 @@ public class PythonTracer {
 	 * determines its order of complexity, and prints the result to the console.
 	 */
 	public static void main (String[] args) {
+		Complexity complexity1 = new Complexity(3, 5);
+		Complexity complexity2 = new Complexity(3, 5);
 		
-		
+		System.out.println(complexity1.toString());
+		System.out.println(complexity2.toString());
+		System.out.println(complexity1.isLessThan(complexity2));
 	}
 }
