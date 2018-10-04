@@ -112,6 +112,9 @@ public class CodeBlock {
 	
 	/**
 	 * Creates a new CodeBlock nested inside of topCodeBlock.
+	 * 
+	 * @param topCodeBlock
+	 * 	The CodeBlock that will contain this CodeBlock
 	 */
 	public CodeBlock(CodeBlock topCodeBlock) {
 		this.blockComplexity = new Complexity();
@@ -127,6 +130,26 @@ public class CodeBlock {
 			this.name = topCodeBlock.getName() + "." + 
 					    Integer.toString(topCodeBlock.getSubBlockCount());
 		}
+	}
+	
+	/**
+	 * Creates a new CodeBlock nested inside of topCodeBlock.
+	 * 
+	 * @param topCodeBlock
+	 * 	The CodeBlock that will contain this CodeBlock
+	 * 
+	 * @param complexity
+	 * 	The complexity to initialize to 
+	 */
+	public CodeBlock(CodeBlock topCodeBlock, Complexity complexity) {
+		this(topCodeBlock);
+		this.blockComplexity = complexity;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%-20s%-40s%-40s", "\tBLOCK" + name, "block complexity = " + blockComplexity, 
+						     "highest sub-complexity = " + highestSubComplexity);
 	}
 	
 }

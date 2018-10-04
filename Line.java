@@ -93,7 +93,25 @@ public class Line {
 	}
 	
 	/**
-	 * Gets the loop count of the for loop.
+	 * Returns the name of the function being defined.
+	 * 
+	 * <dl>
+	 * <dt>Preconditions:</dt>
+	 * <dd><code>getKeyword(line)</code> returns "def".
+	 * </dl>
+	 * 
+	 * @param line
+	 * 	The line to retrieve the function name from
+	 * 
+	 * @return
+	 * 	The function name
+	 */
+	public static String getFunctionName(String line) {
+		return line.trim().split(" ")[1].split("\\(")[0];
+	}
+	
+	/**
+	 * Gets the complexity of the for loop, ignoring what statements are actually inside.
 	 * 
 	 * <dl>
 	 * <dt>Preconditions:</dt>
@@ -104,15 +122,15 @@ public class Line {
 	 * 	The line to retrieve the loop count from
 	 * 
 	 * @return
-	 * 	The loop count of the for loop.
+	 * 	The complexity of the for loop
 	 */
-	public static String getForLoopCount(String line) {
+	public static Complexity getForLoopComplexity(String line) {
 		if (line.trim().split(" ")[3].equals("N:")) {
-			return "N";
+			return new Complexity(1, 0);
 		} else if (line.trim().split(" ")[3].equals("log_N:")) {
-			return "log_N";
+			return new Complexity(0, 1);
 		} else {
-			return "";
+			return new Complexity(0,0);
 		}
 	}
 	

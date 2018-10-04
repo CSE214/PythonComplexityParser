@@ -12,7 +12,9 @@ import java.util.Scanner;
 *    Stony Brook ID: 110261379
 **/
 public class PythonTracer {
+	private static BlockStack stack = new BlockStack();
 	private static final int SPACE_COUNT = 4; // Number of spaces per indent
+	private static String name = null;
 	private static Scanner in;
 	
 	/**
@@ -21,7 +23,7 @@ public class PythonTracer {
 	 * @param file
 	 * 	The file to open
 	 */
-	public static void openFile(String file) {
+	private static void openFile(String file) {
 		try {
 			in = new Scanner(new File(file));
 		} catch (Exception e) {
@@ -29,8 +31,70 @@ public class PythonTracer {
 		}
 	}
 	
-	public static void handleKeyword(String line) {
-		
+	/**
+	 * Handles code for leaving a block in the parser.
+	 * 
+	 * @param indents
+	 * 	Number of indents in current line.
+	 * 
+	 * <dl>
+	 * <dt>Postconditions</dt>
+	 * <dd>Closes the file if indents is 0, or pops off the <code>BlockStack</code> otherwise.
+	 * </dl>
+	 * 
+	 */
+	private static void leaveBlock(int indents) {
+		if (indents == 0) {
+			in.close();
+			CodeBlock global = stack.pop();
+			printResult(global.getTotalComplexity());
+		} else {
+			stack.pop();
+		}
+	}
+	
+	/**
+	 * Handles keywords in the line for the parser.
+	 * 
+	 * <dl>
+	 * <dt>Postconditions</dt>
+	 * <dd>
+	 * Determines the keyword in the line and pushes the new appropriate <code>CodeBlock</code>
+	 * to the stack. 
+	 * </dd>
+	 * </dl>
+	 */
+	private static void handleKeyword(String line) {
+		String keyword = Line.getKeyword(line);
+		if (keyword.equals("for")) {
+			Complexity complexity = Line.getForLoopComplexity(line);
+			stack.push(new CodeBlock(stack.peek(), complexity));
+		} else if (keyword.equals("while")) {
+			String loopVariable = Line.getWhileLoopVariable(line);
+			CodeBlock newCodeBlock = new CodeBlock(stack.peek(), new Complexity());
+			newCodeBlock.setLoopVariable(loopVariable);
+			stack.push(newCodeBlock);
+		} else {
+			stack.push(new CodeBlock(stack.peek(), new Complexity()));
+		}
+	}
+	
+	/**
+	 * Prints the complexity of the function after parsing is done.
+	 * 
+	 * @param complexity
+	 * 	The complexity of the function
+	 * 
+	 * <dl>
+	 * <dt>Postconditions</dt>
+	 * <dd>
+	 * A message describing the complexity of the chosen file is shown to the user.
+	 * </dd>
+	 * </dl>
+	 */
+	private static void printResult(Complexity complexity) {
+		System.out.println("\nOverall complexity of " + name + ": " + complexity.toString());
+		System.exit(0);
 	}
 	
 	/**
@@ -58,11 +122,7 @@ public class PythonTracer {
 	 * determines its order of complexity, and prints the result to the console.
 	 */
 	public static void main (String[] args) {
-		Complexity complexity1 = new Complexity(3, 5);
-		Complexity complexity2 = new Complexity(3, 5);
-		
-		System.out.println(complexity1.toString());
-		System.out.println(complexity2.toString());
-		System.out.println(complexity1.isLessThan(complexity2));
+		String test = "def selectExpenses(map, filter)";
+		System.out.println(Line.getFunctionName(test));
 	}
 }
