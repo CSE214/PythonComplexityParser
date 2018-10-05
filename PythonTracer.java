@@ -12,10 +12,12 @@ import java.util.Scanner;
 *    Stony Brook ID: 110261379
 **/
 public class PythonTracer {
-	private static BlockStack stack = new BlockStack();
 	private static final int SPACE_COUNT = 4; // Number of spaces per indent
-	private static String name = null;
-	private static Scanner in;
+	private static BlockStack stack = new BlockStack(); //Specialized Stack of CodeBlocks
+	private static String name = ""; // Name of function being defined
+	private static CodeLine currentLine = new CodeLine(); // Current line of the tracer
+	private static Scanner fileInput = new Scanner(System.in); // Take file input
+	private static Scanner fileReader; // Reads the file
 	
 	/**
 	 * Opens the specified file to read for the Scanner.
@@ -23,12 +25,48 @@ public class PythonTracer {
 	 * @param file
 	 * 	The file to open
 	 */
-	private static void openFile(String file) {
+	private static void openFile() {
+//		System.out.print("Please enter the python file to scan: ");
+//		String fileName = fileInput.nextLine();
+		
 		try {
-			in = new Scanner(new File(file));
+			fileReader = new Scanner(new File("pythonFiles/matrixMultiply.py"));
+			traceFile();
 		} catch (Exception e) {
-			System.out.println("Could not open file.");
+			System.out.println("Could not open file. Please try again.");
+			System.out.println(e);
+			openFile();
 		}
+	}
+	
+	/**
+	 * Handles keywords in the line for the parser.
+	 * 
+	 * <dl>
+	 * <dt>Postconditions</dt>
+	 * <dd>
+	 * Determines the keyword in the line and pushes the new appropriate <code>CodeBlock</code>
+	 * to the stack. 
+	 * </dd>
+	 * </dl>
+	 */
+	private static void handleKeyword() {
+		String keyword = currentLine.getKeyword();
+		if (keyword.equals("for")) {
+			Complexity complexity = currentLine.getForLoopComplexity();
+			stack.push(new CodeBlock(stack.peek(), complexity));
+			enteringBlockMessage(keyword);
+		} else if (keyword.equals("while")) {
+			String loopVariable = currentLine.getWhileLoopVariable();
+			CodeBlock newCodeBlock = new CodeBlock(stack.peek(), new Complexity());
+			newCodeBlock.setLoopVariable(loopVariable);
+			stack.push(newCodeBlock);
+			enteringBlockMessage(keyword);
+		} else {
+			stack.push(new CodeBlock(stack.peek(), new Complexity()));
+			enteringBlockMessage(keyword);
+		}
+		System.out.println("Leaving handler");
 	}
 	
 	/**
@@ -44,39 +82,63 @@ public class PythonTracer {
 	 * 
 	 */
 	private static void leaveBlock(int indents) {
-		if (indents == 0) {
-			in.close();
+		if (currentLine.getIndentCount() == 0) {
+			fileReader.close();
 			CodeBlock global = stack.pop();
 			printResult(global.getTotalComplexity());
 		} else {
+			String oldBlockName = stack.peek().getName();
 			stack.pop();
+			leavingBlockMessage(oldBlockName);
 		}
 	}
 	
 	/**
-	 * Handles keywords in the line for the parser.
+	 * Sends the currentLine to the first line with a def keyword.
 	 * 
 	 * <dl>
 	 * <dt>Postconditions</dt>
 	 * <dd>
-	 * Determines the keyword in the line and pushes the new appropriate <code>CodeBlock</code>
-	 * to the stack. 
+	 * The currentLine should have a def keyword.
 	 * </dd>
 	 * </dl>
 	 */
-	private static void handleKeyword(String line) {
-		String keyword = Line.getKeyword(line);
-		if (keyword.equals("for")) {
-			Complexity complexity = Line.getForLoopComplexity(line);
-			stack.push(new CodeBlock(stack.peek(), complexity));
-		} else if (keyword.equals("while")) {
-			String loopVariable = Line.getWhileLoopVariable(line);
-			CodeBlock newCodeBlock = new CodeBlock(stack.peek(), new Complexity());
-			newCodeBlock.setLoopVariable(loopVariable);
-			stack.push(newCodeBlock);
-		} else {
-			stack.push(new CodeBlock(stack.peek(), new Complexity()));
-		}
+	private static void toDefKeyword() {
+		do {
+			currentLine.setLine(fileReader.nextLine());
+		} while (currentLine.isEmpty() || currentLine.isComment());
+	}
+	
+	/**
+	 * Prints a feedback message to the user whenever the tracer
+	 * enters a new block.
+	 * 
+	 * <dl>
+	 * <dt>Postconditions</dt>
+	 * <dd>
+	 * A message displaying the block being entered is displayed to the user.
+	 * </dd>
+	 * </dl>
+	 */
+	private static void enteringBlockMessage(String keyword) {
+		System.out.println("\nEntering block " + stack.peek().getName() + " '" + keyword + "':");
+		System.out.println(stack.peek().toString());
+	}
+	
+	/**
+	 * Prints a feedback message to the user whenever the tracer
+	 * enters a new block.
+	 * 
+	 * <dl>
+	 * <dt>Postconditions</dt>
+	 * <dd>
+	 * A message displaying the block being entered is displayed to the user.
+	 * </dd>
+	 * </dl>
+	 */
+	private static void leavingBlockMessage(String oldBlockName) {
+		System.out.println("\nLeaving block " + oldBlockName + ", updating block " + stack.peek().getName() + ":");
+		System.out.println(stack.peek().toString());
 	}
 	
 	/**
@@ -113,16 +175,28 @@ public class PythonTracer {
 	 * @returns 
 	 * 	A Complexity object representing the total order of complexity of the Python code contained within the file.
 	 */
-	public static void traceFile(String filename) {
-		
+	public static void traceFile() {
+		toDefKeyword();
+		name = currentLine.getFunctionName();
+		enteringBlockMessage("def");
+		while(fileReader.hasNextLine()) {
+			currentLine.setLine(fileReader.nextLine());
+			if (!currentLine.isEmpty() && !currentLine.isComment()) {
+				while (currentLine.getIndentCount() <= stack.getSize()) {
+					leaveBlock(currentLine.getIndentCount());
+					stack.pop();
+				}
+				if(currentLine.hasKeyword()) {
+					handleKeyword();;
+				} 
+			}
+		}
 	}
 	
 	/**
-	 * Prompts the user for the name of a file containing a single Python function, 
-	 * determines its order of complexity, and prints the result to the console.
+	 * Starts the program.
 	 */
 	public static void main (String[] args) {
-		String test = "def selectExpenses(map, filter)";
-		System.out.println(Line.getFunctionName(test));
+		openFile();	
 	}
 }

@@ -105,7 +105,7 @@ public class CodeBlock {
 	public CodeBlock() {
 		this.blockComplexity = new Complexity();
 		this.highestSubComplexity = new Complexity();
-		this.name = "";
+		this.name = "1";
 		this.loopVariable = null;
 		this.subBlockCount = 0;
 	}
@@ -119,7 +119,7 @@ public class CodeBlock {
 	public CodeBlock(CodeBlock topCodeBlock) {
 		this.blockComplexity = new Complexity();
 		this.highestSubComplexity = new Complexity();
-		this.loopVariable = null;
+		this.loopVariable = "";
 		this.subBlockCount = 0;
 		
 		topCodeBlock.incrementSubBlockCount();
@@ -148,7 +148,7 @@ public class CodeBlock {
 	
 	@Override
 	public String toString() {
-		return String.format("%-20s%-40s%-40s", "\tBLOCK" + name, "block complexity = " + blockComplexity, 
+		return String.format("%-20s%-40s%-40s", "\tBLOCK " + name, "block complexity = " + blockComplexity, 
 						     "highest sub-complexity = " + highestSubComplexity);
 	}
 	

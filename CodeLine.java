@@ -8,9 +8,25 @@ package complexityparser;
 *    e-mail: sayan.sivakumaran@stonybrook.edu
 *    Stony Brook ID: 110261379
 **/
-public class Line {
-	private static final int SPACE_COUNT = 4; // Number of spaces per indent
+public class CodeLine {
+	private String line; // String representation of code
+	private final int SPACE_COUNT = 4; // Number of spaces per indent
 	
+	/**
+	 * @return 
+	 *	The line of this instance
+	 */
+	public String getLine() {
+		return line;
+	}
+	/**
+	 * @param line 
+	 * 	The new line to set
+	 */
+	public void setLine(String line) {
+		this.line = line;
+	}
+
 	/**
 	 * Checks if the line is empty.
 	 * 
@@ -20,7 +36,7 @@ public class Line {
 	 * @return
 	 * 	True if line is empty, false otherwise.
 	 */
-	public static boolean isEmpty(String line) {
+	public boolean isEmpty() {
 		return line.trim().equals("");
 	}
 	
@@ -33,8 +49,8 @@ public class Line {
 	 * @return
 	 * 	True if line is a comment, false otherwise.
 	 */
-	public static boolean isComment(String line) {
-		return line.charAt(0) == '#';
+	public boolean isComment() {
+		return line.trim().charAt(0) == '#';
 	}
 	
 	/**
@@ -46,7 +62,7 @@ public class Line {
 	 * @return
 	 * 	The number of indents in the line.
 	 */
-	public static int getIndentNumber(String line) {
+	public int getIndentCount() {
 		int spaceCount = 0;
 		while (line.charAt(0) == ' ') {
 			line = line.substring(1);
@@ -64,7 +80,7 @@ public class Line {
 	 * @return
 	 * 	True if the line has a keyword at the beginning of the line, false otherwise
 	 */
-	public static boolean hasKeyword(String line) {
+	public boolean hasKeyword() {
 		String firstWord = line.trim().split(" ")[0];
 		return firstWord.equals("def") ||
 			   firstWord.equals("for") ||
@@ -88,7 +104,7 @@ public class Line {
 	 * @return
 	 * 	The line's keyword
 	 */
-	public static String getKeyword(String line) {
+	public String getKeyword() {
 		return line.trim().split(" ")[0];
 	}
 	
@@ -106,7 +122,7 @@ public class Line {
 	 * @return
 	 * 	The function name
 	 */
-	public static String getFunctionName(String line) {
+	public String getFunctionName() {
 		return line.trim().split(" ")[1].split("\\(")[0];
 	}
 	
@@ -124,7 +140,7 @@ public class Line {
 	 * @return
 	 * 	The complexity of the for loop
 	 */
-	public static Complexity getForLoopComplexity(String line) {
+	public Complexity getForLoopComplexity() {
 		if (line.trim().split(" ")[3].equals("N:")) {
 			return new Complexity(1, 0);
 		} else if (line.trim().split(" ")[3].equals("log_N:")) {
@@ -148,7 +164,7 @@ public class Line {
 	 * @return
 	 * 	The loop variable of the while loop
 	 */
-	public static String getWhileLoopVariable(String line) {
+	public String getWhileLoopVariable() {
 		return line.trim().split(" ")[1];
 	}
 	
@@ -166,8 +182,25 @@ public class Line {
 	 * @return
 	 * 	True if the loopVariable is updated, false otherwise
 	 */
-	public static boolean updatesLoopVariable(String line, String loopVariable) {
+	public boolean updatesLoopVariable(String loopVariable) {
 		return line.trim().equals(loopVariable + " -= 1") ||
 			   line.trim().equals(loopVariable + " /= 2");
+	}
+	
+	/**
+	 * Returns an instance of CodeLine
+	 */
+	public CodeLine() {
+		this.line = "";
+	}
+	
+	/**
+	 * Returns an instance of CodeLine
+	 * 
+	 * @param line
+	 * 	The line to initialize to
+	 */
+	public CodeLine(String line) {
+		this.line = line;
 	}
 }

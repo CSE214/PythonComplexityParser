@@ -11,8 +11,8 @@ import java.util.Stack;
 *    Stony Brook ID: 110261379
 **/
 public class BlockStack {
-	private Stack<CodeBlock> stack = new Stack<CodeBlock>(); // Stack of codeBlocks
-	private int size = -1; // Set to -1 so globalBlock isn't counted in size
+	private Stack<CodeBlock> stack; // Stack of codeBlocks
+	private int size; // Size of stack
 	
 	/**
 	 * @return
@@ -46,14 +46,16 @@ public class BlockStack {
 	public CodeBlock pop() {
 		size--;
 		CodeBlock oldTop = stack.pop();
+		System.out.println("POPPED!");
 		Complexity oldTopComplexity = oldTop.getTotalComplexity(); 
+		System.out.println(oldTopComplexity.toString());
 		
 		if (size > -1) {
 			if (peek().getHighestSubComplexity().isLessThan(oldTopComplexity)) {
 				peek().setHighestSubComplexity(oldTopComplexity);
 			}
 		}
-		return stack.pop();
+		return oldTop;
 	}
 	
 	/**
@@ -64,5 +66,11 @@ public class BlockStack {
 	 */
 	public CodeBlock peek() {
 		return stack.peek();
+	}
+	
+	public BlockStack() {
+		this.stack = new Stack<CodeBlock>();
+		this.size = -1; //Set to -1 so globalBlock isn't counted in size
+		this.stack.push(new CodeBlock()); //Push globalBlock
 	}
 }
