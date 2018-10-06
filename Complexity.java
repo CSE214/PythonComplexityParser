@@ -139,7 +139,7 @@ public class Complexity {
 	 * 	The sum of Complexities <code>a</code> and <code>b</code>
 	 */
 	public static Complexity addComplexities(Complexity a, Complexity b) {
-		return a.isLessThan(b) ? b : a;
+		return a.isLessThan(b) ? a : b;
 	}
 	
 	/**

@@ -46,14 +46,11 @@ public class BlockStack {
 	public CodeBlock pop() {
 		size--;
 		CodeBlock oldTop = stack.pop();
-		System.out.println("POPPED!");
 		Complexity oldTopComplexity = oldTop.getTotalComplexity(); 
-		System.out.println(oldTopComplexity.toString());
 		
 		if (size > -1) {
-			if (peek().getHighestSubComplexity().isLessThan(oldTopComplexity)) {
-				peek().setHighestSubComplexity(oldTopComplexity);
-			}
+			Complexity highestSubComplexity = Complexity.addComplexities(stack.peek().getHighestSubComplexity(), oldTopComplexity);
+			stack.peek().setHighestSubComplexity(highestSubComplexity);
 		}
 		return oldTop;
 	}
@@ -71,6 +68,5 @@ public class BlockStack {
 	public BlockStack() {
 		this.stack = new Stack<CodeBlock>();
 		this.size = -1; //Set to -1 so globalBlock isn't counted in size
-		this.stack.push(new CodeBlock()); //Push globalBlock
 	}
 }

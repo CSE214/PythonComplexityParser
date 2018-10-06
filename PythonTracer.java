@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Scanner;
 
 /**
+ * FIX INDENTING ISSUE
+ * 
 * The <code>PythonTracer</code> allows the user to give a Python file as input, and computes its Big-Oh complexity.
 *    
 *
@@ -16,6 +18,7 @@ public class PythonTracer {
 	private static BlockStack stack = new BlockStack(); //Specialized Stack of CodeBlocks
 	private static String name = ""; // Name of function being defined
 	private static CodeLine currentLine = new CodeLine(); // Current line of the tracer
+	privat
 	private static Scanner fileInput = new Scanner(System.in); // Take file input
 	private static Scanner fileReader; // Reads the file
 	
@@ -34,7 +37,6 @@ public class PythonTracer {
 			traceFile();
 		} catch (Exception e) {
 			System.out.println("Could not open file. Please try again.");
-			System.out.println(e);
 			openFile();
 		}
 	}
@@ -66,7 +68,6 @@ public class PythonTracer {
 			stack.push(new CodeBlock(stack.peek(), new Complexity()));
 			enteringBlockMessage(keyword);
 		}
-		System.out.println("Leaving handler");
 	}
 	
 	/**
@@ -87,6 +88,7 @@ public class PythonTracer {
 			CodeBlock global = stack.pop();
 			printResult(global.getTotalComplexity());
 		} else {
+			System.out.println("HI FROM INSIDE");
 			String oldBlockName = stack.peek().getName();
 			stack.pop();
 			leavingBlockMessage(oldBlockName);
@@ -176,6 +178,7 @@ public class PythonTracer {
 	 * 	A Complexity object representing the total order of complexity of the Python code contained within the file.
 	 */
 	public static void traceFile() {
+		stack.push(new CodeBlock()); //Push globalBlock
 		toDefKeyword();
 		name = currentLine.getFunctionName();
 		enteringBlockMessage("def");
@@ -184,13 +187,23 @@ public class PythonTracer {
 			if (!currentLine.isEmpty() && !currentLine.isComment()) {
 				while (currentLine.getIndentCount() <= stack.getSize()) {
 					leaveBlock(currentLine.getIndentCount());
-					stack.pop();
+					System.out.println("HI");
 				}
 				if(currentLine.hasKeyword()) {
 					handleKeyword();;
-				} 
+				} else if (stack.peek().getLoopVariable() != null && currentLine.updatesLoopVariable(stack.peek().getLoopVariable())) {
+					if (currentLine.getLine().trim().split(" ")[1].equals("-=")) {
+						stack.peek().setBlockComplexity(new Complexity(1,0));
+					} else {
+						stack.peek().setBlockComplexity(new Complexity(0,1));
+					}
+				}
 			}
 		}
+		while(stack.getSize() > 0) {
+			stack.pop();
+		}
+		System.out.println(stack.pop().getTotalComplexity().toString());
 	}
 	
 	/**
@@ -198,5 +211,12 @@ public class PythonTracer {
 	 */
 	public static void main (String[] args) {
 		openFile();	
+//		Complexity complexity1 = new Complexity(2,1);
+//		Complexity complexity2 = new Complexity(1,0);
+//		CodeBlock code = new CodeBlock();
+//		code.setBlockComplexity(complexity1);
+//		code.setHighestSubComplexity(complexity2);
+//		
+//		System.out.println(code.getTotalComplexity());
 	}
 }

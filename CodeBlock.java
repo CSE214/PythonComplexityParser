@@ -119,7 +119,7 @@ public class CodeBlock {
 	public CodeBlock(CodeBlock topCodeBlock) {
 		this.blockComplexity = new Complexity();
 		this.highestSubComplexity = new Complexity();
-		this.loopVariable = "";
+		this.loopVariable = null;
 		this.subBlockCount = 0;
 		
 		topCodeBlock.incrementSubBlockCount();
