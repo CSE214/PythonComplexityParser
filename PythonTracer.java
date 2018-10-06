@@ -18,7 +18,6 @@ public class PythonTracer {
 	private static BlockStack stack = new BlockStack(); //Specialized Stack of CodeBlocks
 	private static String name = ""; // Name of function being defined
 	private static CodeLine currentLine = new CodeLine(); // Current line of the tracer
-	privat
 	private static Scanner fileInput = new Scanner(System.in); // Take file input
 	private static Scanner fileReader; // Reads the file
 	
@@ -29,11 +28,11 @@ public class PythonTracer {
 	 * 	The file to open
 	 */
 	private static void openFile() {
-//		System.out.print("Please enter the python file to scan: ");
-//		String fileName = fileInput.nextLine();
+		System.out.print("Please enter the python file to scan: ");
+		String fileName = fileInput.nextLine();
 		
 		try {
-			fileReader = new Scanner(new File("pythonFiles/matrixMultiply.py"));
+			fileReader = new Scanner(new File(fileName));
 			traceFile();
 		} catch (Exception e) {
 			System.out.println("Could not open file. Please try again.");
@@ -83,12 +82,11 @@ public class PythonTracer {
 	 * 
 	 */
 	private static void leaveBlock(int indents) {
-		if (currentLine.getIndentCount() == 0) {
+		if (stack.getSize() == 0) {
 			fileReader.close();
 			CodeBlock global = stack.pop();
 			printResult(global.getTotalComplexity());
 		} else {
-			System.out.println("HI FROM INSIDE");
 			String oldBlockName = stack.peek().getName();
 			stack.pop();
 			leavingBlockMessage(oldBlockName);
@@ -187,7 +185,6 @@ public class PythonTracer {
 			if (!currentLine.isEmpty() && !currentLine.isComment()) {
 				while (currentLine.getIndentCount() <= stack.getSize()) {
 					leaveBlock(currentLine.getIndentCount());
-					System.out.println("HI");
 				}
 				if(currentLine.hasKeyword()) {
 					handleKeyword();;
