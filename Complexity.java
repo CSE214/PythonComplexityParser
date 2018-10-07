@@ -119,10 +119,10 @@ public class Complexity {
 	 * 	True if <code>complexity</code> is strictly greater, false otherwise. 
 	 */
 	public boolean isLessThan(Complexity complexity) {
-		if (nPower > complexity.getNPower()) {
+		if (nPower < complexity.getNPower()) {
 			return true;
 		} else {
-			return logPower > complexity.getLogPower(); 
+			return logPower < complexity.getLogPower(); 
 		}
 		
 	}
@@ -139,7 +139,7 @@ public class Complexity {
 	 * 	The sum of Complexities <code>a</code> and <code>b</code>
 	 */
 	public static Complexity addComplexities(Complexity a, Complexity b) {
-		return a.isLessThan(b) ? a : b;
+		return a.isLessThan(b) ? b : a;
 	}
 	
 	/**

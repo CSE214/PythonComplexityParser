@@ -69,4 +69,5 @@ public class BlockStack {
 		this.stack = new Stack<CodeBlock>();
 		this.size = -1; //Set to -1 so globalBlock isn't counted in size
 	}
+
 }

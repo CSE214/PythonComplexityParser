@@ -1,6 +1,7 @@
 package complexityparser;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -28,14 +29,22 @@ public class PythonTracer {
 	 * 	The file to open
 	 */
 	private static void openFile() {
-		System.out.print("Please enter the python file to scan: ");
+		System.out.print("Please enter the python file to scan (or 'quit' to quit): ");
 		String fileName = fileInput.nextLine();
-		
+		if (fileName.equals("quit")) {
+			System.out.println("Program terminating successfully...");
+			System.exit(0);
+		}
 		try {
 			fileReader = new Scanner(new File(fileName));
-			traceFile();
+			try {
+				traceFile();
+			} catch (Exception e) {
+				System.out.println("\nCould not properly parse file. Make sure the syntax is valid.\n");
+				openFile();
+			}
 		} catch (Exception e) {
-			System.out.println("Could not open file. Please try again.");
+			System.out.println("Cannot read filepath. Please try again.");
 			openFile();
 		}
 	}
@@ -70,6 +79,26 @@ public class PythonTracer {
 	}
 	
 	/**
+	 * Handles loop variables that update the while block.
+	 * 
+	 * <dl>
+	 * <dt>Postconditions</dt>
+	 * <dd>
+	 * Updates the complexity of the while block.
+	 * </dd>
+	 * </dl>
+	 */
+	private static void handleLoopVariable() {
+		System.out.println("\nFound update statement, updating block " + stack.peek().getName() + ":");
+		if (currentLine.getLine().trim().split(" ")[1].equals("-=")) {
+			stack.peek().setBlockComplexity(new Complexity(1,0));
+		} else {
+			stack.peek().setBlockComplexity(new Complexity(0,1));
+		}
+		System.out.println(stack.peek().toString());
+	}
+	
+	/**
 	 * Handles code for leaving a block in the parser.
 	 * 
 	 * @param indents
@@ -82,14 +111,12 @@ public class PythonTracer {
 	 * 
 	 */
 	private static void leaveBlock(int indents) {
-		if (stack.getSize() == 0) {
-			fileReader.close();
+		if (stack.getSize() == 0 && !fileReader.hasNextLine()) {
 			CodeBlock global = stack.pop();
 			printResult(global.getTotalComplexity());
 		} else {
-			String oldBlockName = stack.peek().getName();
-			stack.pop();
-			leavingBlockMessage(oldBlockName);
+			CodeBlock oldBlock = stack.pop();
+			leavingBlockMessage(oldBlock);
 		}
 	}
 	
@@ -136,8 +163,12 @@ public class PythonTracer {
 	 * </dd>
 	 * </dl>
 	 */
-	private static void leavingBlockMessage(String oldBlockName) {
-		System.out.println("\nLeaving block " + oldBlockName + ", updating block " + stack.peek().getName() + ":");
+	private static void leavingBlockMessage(CodeBlock oldBlock) {
+		if (oldBlock.getTotalComplexity().isLessThan(stack.peek().getHighestSubComplexity())) {
+			System.out.println("\nLeaving block " + oldBlock.getName() + ", nothing to update.");
+		} else {
+			System.out.println("\nLeaving block " + oldBlock.getName() + ", updating block " + stack.peek().getName() + ":");
+		}
 		System.out.println(stack.peek().toString());
 	}
 	
@@ -155,8 +186,8 @@ public class PythonTracer {
 	 * </dl>
 	 */
 	private static void printResult(Complexity complexity) {
-		System.out.println("\nOverall complexity of " + name + ": " + complexity.toString());
-		System.exit(0);
+		System.out.println("\nOverall complexity of " + name + ": " + complexity.toString() + "\n");
+		openFile();
 	}
 	
 	/**
@@ -183,24 +214,20 @@ public class PythonTracer {
 		while(fileReader.hasNextLine()) {
 			currentLine.setLine(fileReader.nextLine());
 			if (!currentLine.isEmpty() && !currentLine.isComment()) {
-				while (currentLine.getIndentCount() <= stack.getSize()) {
+				while (currentLine.getIndentCount() < stack.getSize()) {
 					leaveBlock(currentLine.getIndentCount());
 				}
 				if(currentLine.hasKeyword()) {
-					handleKeyword();;
+					handleKeyword();
 				} else if (stack.peek().getLoopVariable() != null && currentLine.updatesLoopVariable(stack.peek().getLoopVariable())) {
-					if (currentLine.getLine().trim().split(" ")[1].equals("-=")) {
-						stack.peek().setBlockComplexity(new Complexity(1,0));
-					} else {
-						stack.peek().setBlockComplexity(new Complexity(0,1));
-					}
+					handleLoopVariable();
 				}
 			}
 		}
 		while(stack.getSize() > 0) {
 			stack.pop();
 		}
-		System.out.println(stack.pop().getTotalComplexity().toString());
+		printResult(stack.pop().getTotalComplexity());
 	}
 	
 	/**
@@ -208,12 +235,5 @@ public class PythonTracer {
 	 */
 	public static void main (String[] args) {
 		openFile();	
-//		Complexity complexity1 = new Complexity(2,1);
-//		Complexity complexity2 = new Complexity(1,0);
-//		CodeBlock code = new CodeBlock();
-//		code.setBlockComplexity(complexity1);
-//		code.setHighestSubComplexity(complexity2);
-//		
-//		System.out.println(code.getTotalComplexity());
 	}
 }
