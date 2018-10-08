@@ -64,8 +64,9 @@ public class CodeLine {
 	 */
 	public int getIndentCount() {
 		int spaceCount = 0;
-		while (line.charAt(0) == ' ') {
-			line = line.substring(1);
+		String codeLine = line;
+		while (codeLine.charAt(0) == ' ') {
+			codeLine = codeLine.substring(1);
 			spaceCount++;
 		}
 		return spaceCount/SPACE_COUNT;

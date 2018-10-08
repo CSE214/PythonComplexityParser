@@ -36,7 +36,7 @@ public class PythonTracer {
 			System.exit(0);
 		}
 		try {
-			fileReader = new Scanner(new File(fileName));
+			fileReader = new Scanner(new File("pythonFiles/test.py"));
 			try {
 				traceFile();
 			} catch (Exception e) {
@@ -45,6 +45,7 @@ public class PythonTracer {
 			}
 		} catch (Exception e) {
 			System.out.println("Cannot read filepath. Please try again.");
+			System.out.println(e);
 			openFile();
 		}
 	}
@@ -214,7 +215,7 @@ public class PythonTracer {
 		while(fileReader.hasNextLine()) {
 			currentLine.setLine(fileReader.nextLine());
 			if (!currentLine.isEmpty() && !currentLine.isComment()) {
-				while (currentLine.getIndentCount() < stack.getSize()) {
+				while (currentLine.getIndentCount() <= stack.getSize()) {
 					leaveBlock(currentLine.getIndentCount());
 				}
 				if(currentLine.hasKeyword()) {
