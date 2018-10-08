@@ -47,7 +47,6 @@ public class BlockStack {
 		size--;
 		CodeBlock oldTop = stack.pop();
 		Complexity oldTopComplexity = oldTop.getTotalComplexity(); 
-		
 		if (size > -1) {
 			Complexity highestSubComplexity = Complexity.addComplexities(stack.peek().getHighestSubComplexity(), oldTopComplexity);
 			stack.peek().setHighestSubComplexity(highestSubComplexity);

@@ -121,6 +121,8 @@ public class Complexity {
 	public boolean isLessThan(Complexity complexity) {
 		if (nPower < complexity.getNPower()) {
 			return true;
+		} else if (nPower > complexity.getNPower()) {
+			return false;
 		} else {
 			return logPower < complexity.getLogPower(); 
 		}
