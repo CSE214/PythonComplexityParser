@@ -36,16 +36,15 @@ public class PythonTracer {
 			System.exit(0);
 		}
 		try {
-			fileReader = new Scanner(new File("pythonFiles/test.py"));
+			fileReader = new Scanner(new File(fileName));
 			try {
-				traceFile();
+				printResult(traceFile());
 			} catch (Exception e) {
 				System.out.println("\nCould not properly parse file. Make sure the syntax is valid.\n");
 				openFile();
 			}
 		} catch (Exception e) {
 			System.out.println("Cannot read filepath. Please try again.");
-			System.out.println(e);
 			openFile();
 		}
 	}
@@ -102,23 +101,15 @@ public class PythonTracer {
 	/**
 	 * Handles code for leaving a block in the parser.
 	 * 
-	 * @param indents
-	 * 	Number of indents in current line.
-	 * 
 	 * <dl>
 	 * <dt>Postconditions</dt>
-	 * <dd>Closes the file if indents is 0, or pops off the <code>BlockStack</code> otherwise.
+	 * <dd>Pops off the <code>BlockStack</code>, with the appropriate message being shown.
 	 * </dl>
 	 * 
 	 */
-	private static void leaveBlock(int indents) {
-		if (stack.getSize() == 0 && !fileReader.hasNextLine()) {
-			CodeBlock global = stack.pop();
-			printResult(global.getTotalComplexity());
-		} else {
-			CodeBlock oldBlock = stack.pop();
-			leavingBlockMessage(oldBlock);
-		}
+	private static void leaveBlock() {
+		CodeBlock oldBlock = stack.pop();
+		leavingBlockMessage(oldBlock);
 	}
 	
 	/**
@@ -207,7 +198,7 @@ public class PythonTracer {
 	 * @returns 
 	 * 	A Complexity object representing the total order of complexity of the Python code contained within the file.
 	 */
-	public static void traceFile() {
+	public static Complexity traceFile() {
 		stack.push(new CodeBlock()); //Push globalBlock
 		toDefKeyword();
 		name = currentLine.getFunctionName();
@@ -216,7 +207,12 @@ public class PythonTracer {
 			currentLine.setLine(fileReader.nextLine());
 			if (!currentLine.isEmpty() && !currentLine.isComment()) {
 				while (currentLine.getIndentCount() <= stack.getSize()) {
-					leaveBlock(currentLine.getIndentCount());
+					if (stack.getSize() == 0 && !fileReader.hasNextLine()) {
+						CodeBlock global = stack.pop();
+						return global.getTotalComplexity();
+					} else {
+						leaveBlock();
+					}
 				}
 				if(currentLine.hasKeyword()) {
 					handleKeyword();
@@ -228,7 +224,7 @@ public class PythonTracer {
 		while(stack.getSize() > 0) {
 			stack.pop();
 		}
-		printResult(stack.pop().getTotalComplexity());
+		return stack.pop().getTotalComplexity();
 	}
 	
 	/**
